@@ -1,97 +1,39 @@
 package cz.itnetwork.dto;
 
-import cz.itnetwork.entity.PersonEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class InvoiceDTO {
 
-    private Long invoiceNumber;
+    @JsonProperty("_id")
+    private Long id;
 
-    private PersonEntity seller;
+    private int invoiceNumber;
 
-    private PersonEntity buyer;
+    private PersonDTO seller;
 
+    private PersonDTO buyer;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate issued;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
     private String product;
 
-    private Double price;
+    private long price;
 
     private int vat;
 
     private String note;
 
-    public Long getInvoiceNumber() {
-        return invoiceNumber;
-    }
-
-    public void setInvoiceNumber(Long invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
-    }
-
-    public PersonEntity getSeller() {
-        return seller;
-    }
-
-    public void setSeller(PersonEntity seller) {
-        this.seller = seller;
-    }
-
-    public PersonEntity getBuyer() {
-        return buyer;
-    }
-
-    public void setBuyer(PersonEntity buyer) {
-        this.buyer = buyer;
-    }
-
-    public LocalDate getIssued() {
-        return issued;
-    }
-
-    public void setIssued(LocalDate issued) {
-        this.issued = issued;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(String product) {
-        this.product = product;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public int getVat() {
-        return vat;
-    }
-
-    public void setVat(int vat) {
-        this.vat = vat;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 }

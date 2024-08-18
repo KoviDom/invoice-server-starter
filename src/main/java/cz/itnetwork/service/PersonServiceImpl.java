@@ -25,6 +25,7 @@ import cz.itnetwork.dto.PersonDTO;
 import cz.itnetwork.dto.mapper.PersonMapper;
 import cz.itnetwork.entity.PersonEntity;
 import cz.itnetwork.entity.repository.PersonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -41,6 +42,7 @@ public class PersonServiceImpl implements PersonService {
     @Autowired
     private PersonRepository personRepository;
 
+    @Override
     public PersonDTO addPerson(PersonDTO personDTO) {
         PersonEntity entity = personMapper.toEntity(personDTO);
         entity = personRepository.save(entity);
@@ -71,6 +73,33 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public PersonDTO getPersonById(long id) {
         return personMapper.toDTO(fetchPersonById(id));
+    }
+
+
+//    public PersonDTO updatePerson(Long id, PersonDTO personDTO) {
+//
+//        //najde osobu podle ID
+//        PersonEntity personEntity = personRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Person with id " + id + " wasn't found in the database."));
+//
+//        // Ulož aktualizovanou entitu
+//        personEntity = personRepository.save(personEntity);
+//
+//        // Převod entity na DTO a návrat
+//        return personMapper.toDTO(personEntity);
+//    }
+
+    public PersonDTO editPerson(Long personId, PersonDTO personDTO) {
+        if (!personRepository.existsById(personId)) {
+            throw new EntityNotFoundException("Person with id " + personId + " wasn't found in the database.");
+        }
+        //zvysi se mi ID
+        removePerson(personId);
+        return addPerson(personDTO);
+//        PersonEntity entity = personMapper.toEntity(personDTO);
+//        entity.setId(personId);
+//        PersonEntity saved = personRepository.save(entity);
+//        return personMapper.toDTO(saved);
     }
 
     // region: Private methods

@@ -1,20 +1,28 @@
 package cz.itnetwork.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Entity(name = "invoices")
+@Getter
+@Setter
 public class InvoiceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long invoiceNumber;
+    @Column(nullable = false)
+    private int invoiceNumber;
 
     @ManyToOne
     private PersonEntity seller;
 
+    //many invoice a 1 person
+    //entita je nejblizsi k databazi
     @ManyToOne
     private PersonEntity buyer;
 
@@ -27,11 +35,12 @@ public class InvoiceEntity {
     @Column(nullable = false)
     private String product;
 
-    private Double price;
-
-    private int vat;
+    @Column(nullable = false)
+    private long price;
 
     @Column(nullable = false)
+    private int vat;
+
     private String note;
 
 }

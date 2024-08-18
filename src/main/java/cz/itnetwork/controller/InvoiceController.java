@@ -14,7 +14,7 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @GetMapping("/invoices")
+    @PostMapping("/invoices")
     public InvoiceDTO addInvoice(@RequestBody InvoiceDTO invoiceDTO) {
 
         return invoiceService.addInvoice(invoiceDTO);

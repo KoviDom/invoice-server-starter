@@ -32,4 +32,5 @@ public interface PersonService {
     //osoby, ktere chceme zobrazit
     PersonDTO getPersonById(long id);
 
+    PersonDTO editPerson(Long id, PersonDTO personDTO);
 }

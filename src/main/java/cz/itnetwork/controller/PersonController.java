@@ -24,6 +24,7 @@ package cz.itnetwork.controller;
 import cz.itnetwork.dto.PersonDTO;
 import cz.itnetwork.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,5 +56,9 @@ public class PersonController {
         return personService.getPersonById(personId);
     }
 
-}
+    @PutMapping({"/persons/{personId}", "/persons/{personId}/"})
+    public PersonDTO editPerson(@PathVariable Long personId, @RequestBody PersonDTO personDTO) {
+        return personService.editPerson(personId, personDTO);
+    }
 
+}
