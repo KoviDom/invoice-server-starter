@@ -37,4 +37,9 @@ public interface InvoiceService {
 
     void removeInvoice(long id);
 
+    // Deklarace nových metod
+    List<InvoiceDTO> getAllSalesBySellerIdentification(String identificationNumber);
+
+    List<InvoiceDTO> getAllPurchasesByBuyerIdentification(String identificationNumber);
+
 }

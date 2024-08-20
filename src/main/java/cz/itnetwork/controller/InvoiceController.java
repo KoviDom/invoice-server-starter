@@ -26,6 +26,18 @@ public class InvoiceController {
         return invoiceService.getAll();
     }
 
+    // Endpoint pro získání všech faktur vystavených konkrétní osobou (prodej) na základě IČO
+    @GetMapping("/identification/{identificationNumber}/sales")
+    public List<InvoiceDTO> getAllSalesBySellerIdentification(@PathVariable String identificationNumber) {
+        return invoiceService.getAllSalesBySellerIdentification(identificationNumber);
+    }
+
+    // Endpoint pro získání všech faktur přijatých konkrétní osobou (nákup) na základě IČO
+    @GetMapping("/identification/{identificationNumber}/purchases")
+    public List<InvoiceDTO> getAllPurchasesByBuyerIdentification(@PathVariable String identificationNumber) {
+        return invoiceService.getAllPurchasesByBuyerIdentification(identificationNumber);
+    }
+
     @DeleteMapping("/invoices/{invoiceId}")
     public void deleteInvoice(@PathVariable Long invoiceId) {
         invoiceService.removeInvoice(invoiceId);

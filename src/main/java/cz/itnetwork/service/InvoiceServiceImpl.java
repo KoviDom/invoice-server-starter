@@ -3,6 +3,7 @@ package cz.itnetwork.service;
 import cz.itnetwork.dto.InvoiceDTO;
 import cz.itnetwork.dto.mapper.InvoiceMapper;
 import cz.itnetwork.entity.InvoiceEntity;
+import cz.itnetwork.entity.PersonEntity;
 import cz.itnetwork.entity.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    // Metoda pro přidání nové faktury
     @Override
     public InvoiceDTO addInvoice(InvoiceDTO invoiceDTO) {
         InvoiceEntity entity = invoiceMapper.toEntity(invoiceDTO);
@@ -28,6 +30,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceMapper.toDTO(entity);
     }
 
+    // Metoda pro získání faktury podle ID
     @Override
     public InvoiceDTO getInvoiceById(long id) {
 //        InvoiceEntity entity = fetchInvoiceById(id);
@@ -35,6 +38,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceMapper.toDTO(fetchInvoiceById(id));
     }
 
+    // Metoda pro získání všech faktur
     @Override
     public List<InvoiceDTO> getAll() {
         return invoiceRepository.findAll()
@@ -43,6 +47,25 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .collect(Collectors.toList());
     }
 
+    // Metoda pro získání všech faktur vystavených konkrétní osobou na základě IČO
+    @Override
+    public List<InvoiceDTO> getAllSalesBySellerIdentification(String identificationNumber) {
+        return invoiceRepository.findBySellerIdentificationNumber(identificationNumber)
+                .stream()
+                .map(invoiceMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Metoda pro získání všech faktur přijatých konkrétní osobou na základě IČO
+    @Override
+    public List<InvoiceDTO> getAllPurchasesByBuyerIdentification(String identificationNumber) {
+        return invoiceRepository.findByBuyerIdentificationNumber(identificationNumber)
+                .stream()
+                .map(invoiceMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Metoda pro odstranění faktury
     @Override
     public void removeInvoice(long id) {
         InvoiceEntity entity = fetchInvoiceById(id);
