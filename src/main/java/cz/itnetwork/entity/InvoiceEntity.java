@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity(name = "invoices")
+@Entity(name = "invoice")
 @Getter
 @Setter
 public class InvoiceEntity {
