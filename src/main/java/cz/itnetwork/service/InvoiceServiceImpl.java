@@ -2,9 +2,11 @@ package cz.itnetwork.service;
 
 import cz.itnetwork.dto.InvoiceDTO;
 import cz.itnetwork.dto.mapper.InvoiceMapper;
+import cz.itnetwork.dto.mapper.PersonMapper;
 import cz.itnetwork.entity.InvoiceEntity;
 import cz.itnetwork.entity.PersonEntity;
 import cz.itnetwork.entity.repository.InvoiceRepository;
+import cz.itnetwork.entity.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -21,10 +23,26 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    @Autowired
+    private PersonMapper personMapper;
+
+    @Autowired
+    private PersonRepository personRepository;
+
     // Metoda pro přidání nové faktury
     @Override
     public InvoiceDTO addInvoice(InvoiceDTO invoiceDTO) {
+        // Načti kompletní entitu Seller a Buyer na základě jejich ID
+        PersonEntity sellerEntity = personRepository.findById(invoiceDTO.getSeller().getId())
+                .orElseThrow(() -> new NotFoundException("Seller not found"));
+        PersonEntity buyerEntity = personRepository.findById(invoiceDTO.getBuyer().getId())
+                .orElseThrow(() -> new NotFoundException("Buyer not found"));
+
+        // Vytvoř novou entitu faktury a nastav seller a buyer entity
         InvoiceEntity entity = invoiceMapper.toEntity(invoiceDTO);
+        entity.setSeller(sellerEntity);
+        entity.setBuyer(buyerEntity);
+
         entity = invoiceRepository.save(entity);
 
         return invoiceMapper.toDTO(entity);
@@ -63,6 +81,39 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .stream()
                 .map(invoiceMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    //podivat se jeste na tohle, jelikoz u PUT mi to dava buyer a seller null hodnoty
+    @Override
+    public InvoiceDTO updateInvoice(long id, InvoiceDTO invoiceDTO) {
+        InvoiceEntity existingInvoice = fetchInvoiceById(id);
+
+        // Načti kompletní entitu Seller a Buyer na základě jejich ID
+        PersonEntity sellerEntity = personRepository.findById(invoiceDTO.getSeller().getId())
+                .orElseThrow(() -> new NotFoundException("Seller not found"));
+        PersonEntity buyerEntity = personRepository.findById(invoiceDTO.getBuyer().getId())
+                .orElseThrow(() -> new NotFoundException("Buyer not found"));
+
+        // Nastavení těchto objektů do faktury
+        existingInvoice.setSeller(sellerEntity);
+        existingInvoice.setBuyer(buyerEntity);
+
+        // Aktualizace existující faktury s novými daty
+        existingInvoice.setInvoiceNumber(invoiceDTO.getInvoiceNumber());
+        existingInvoice.setSeller(personMapper.toEntity(invoiceDTO.getSeller()));
+        existingInvoice.setBuyer(personMapper.toEntity(invoiceDTO.getBuyer()));
+        existingInvoice.setIssued(invoiceDTO.getIssued());
+        existingInvoice.setDueDate(invoiceDTO.getDueDate());
+        existingInvoice.setProduct(invoiceDTO.getProduct());
+        existingInvoice.setPrice(invoiceDTO.getPrice());
+        existingInvoice.setVat(invoiceDTO.getVat());
+        existingInvoice.setNote(invoiceDTO.getNote());
+
+        // Uložení aktualizované faktury do databáze
+        existingInvoice = invoiceRepository.save(existingInvoice);
+
+        // Vrácení aktualizovaného DTO
+        return invoiceMapper.toDTO(existingInvoice);
     }
 
     // Metoda pro odstranění faktury

@@ -1,6 +1,7 @@
 package cz.itnetwork.service;
 
 import cz.itnetwork.dto.InvoiceDTO;
+import org.yaml.snakeyaml.events.Event;
 
 import java.util.List;
 
@@ -41,5 +42,7 @@ public interface InvoiceService {
     List<InvoiceDTO> getAllSalesBySellerIdentification(String identificationNumber);
 
     List<InvoiceDTO> getAllPurchasesByBuyerIdentification(String identificationNumber);
+
+    InvoiceDTO updateInvoice(long id, InvoiceDTO invoiceDTO);
 
 }
