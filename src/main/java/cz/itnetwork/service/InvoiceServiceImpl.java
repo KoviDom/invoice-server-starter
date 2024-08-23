@@ -2,7 +2,6 @@ package cz.itnetwork.service;
 
 import cz.itnetwork.dto.InvoiceDTO;
 import cz.itnetwork.dto.mapper.InvoiceMapper;
-import cz.itnetwork.dto.mapper.PersonMapper;
 import cz.itnetwork.entity.InvoiceEntity;
 import cz.itnetwork.entity.PersonEntity;
 import cz.itnetwork.entity.repository.InvoiceRepository;
@@ -22,9 +21,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
-
-    @Autowired
-    private PersonMapper personMapper;
 
     @Autowired
     private PersonRepository personRepository;
@@ -86,6 +82,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     //podivat se jeste na tohle, jelikoz u PUT mi to dava buyer a seller null hodnoty
     @Override
     public InvoiceDTO updateInvoice(long id, InvoiceDTO invoiceDTO) {
+        // Najdi existující fakturu podle ID
         InvoiceEntity existingInvoice = fetchInvoiceById(id);
 
         // Načti kompletní entitu Seller a Buyer na základě jejich ID
@@ -100,8 +97,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Aktualizace existující faktury s novými daty
         existingInvoice.setInvoiceNumber(invoiceDTO.getInvoiceNumber());
-        existingInvoice.setSeller(personMapper.toEntity(invoiceDTO.getSeller()));
-        existingInvoice.setBuyer(personMapper.toEntity(invoiceDTO.getBuyer()));
         existingInvoice.setIssued(invoiceDTO.getIssued());
         existingInvoice.setDueDate(invoiceDTO.getDueDate());
         existingInvoice.setProduct(invoiceDTO.getProduct());
