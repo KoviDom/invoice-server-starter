@@ -22,7 +22,9 @@
 package cz.itnetwork.service;
 
 import cz.itnetwork.dto.PersonDTO;
+import cz.itnetwork.dto.PersonStatisticsDTO;
 import cz.itnetwork.dto.mapper.PersonMapper;
+import cz.itnetwork.entity.InvoiceEntity;
 import cz.itnetwork.entity.PersonEntity;
 import cz.itnetwork.entity.repository.PersonRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -100,6 +102,18 @@ public class PersonServiceImpl implements PersonService {
 //        entity.setId(personId);
 //        PersonEntity saved = personRepository.save(entity);
 //        return personMapper.toDTO(saved);
+    }
+
+    @Override
+    public List<PersonStatisticsDTO> getPersonStatistics() {
+        return personRepository.findByHidden(false).stream()
+                .map(person -> {
+                    long revenue = person.getSales().stream()
+                            .mapToLong(InvoiceEntity::getPrice)
+                            .sum();
+                    return new PersonStatisticsDTO(person.getId(), person.getName(), revenue);
+                })
+                .collect(Collectors.toList());
     }
 
     // region: Private methods

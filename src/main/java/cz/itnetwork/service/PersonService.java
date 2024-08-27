@@ -1,6 +1,7 @@
 package cz.itnetwork.service;
 
 import cz.itnetwork.dto.PersonDTO;
+import cz.itnetwork.dto.PersonStatisticsDTO;
 
 import java.util.List;
 
@@ -33,4 +34,6 @@ public interface PersonService {
     PersonDTO getPersonById(long id);
 
     PersonDTO editPerson(Long id, PersonDTO personDTO);
+
+    List<PersonStatisticsDTO> getPersonStatistics();
 }

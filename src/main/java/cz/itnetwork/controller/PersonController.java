@@ -22,6 +22,7 @@
 package cz.itnetwork.controller;
 
 import cz.itnetwork.dto.PersonDTO;
+import cz.itnetwork.dto.PersonStatisticsDTO;
 import cz.itnetwork.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,11 @@ public class PersonController {
     @PutMapping({"/persons/{personId}", "/persons/{personId}/"})
     public PersonDTO editPerson(@PathVariable Long personId, @RequestBody PersonDTO personDTO) {
         return personService.editPerson(personId, personDTO);
+    }
+
+    @GetMapping("/persons/statistics")
+    public List<PersonStatisticsDTO> getPersonStatistics() {
+        return personService.getPersonStatistics();
     }
 
 }

@@ -1,6 +1,7 @@
 package cz.itnetwork.service;
 
 import cz.itnetwork.dto.InvoiceDTO;
+import cz.itnetwork.dto.InvoiceStatisticsDTO;
 import cz.itnetwork.dto.mapper.InvoiceMapper;
 import cz.itnetwork.entity.InvoiceEntity;
 import cz.itnetwork.entity.PersonEntity;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,6 +111,28 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         // Vrácení aktualizovaného DTO
         return invoiceMapper.toDTO(existingInvoice);
+    }
+
+    @Override
+    public InvoiceStatisticsDTO getInvoiceStatistics() {
+
+        // Aktuální rok
+        int currentYear = LocalDate.now().getYear();
+
+        // Všechny faktury
+        List<InvoiceEntity> allInvoices = invoiceRepository.findAll();
+
+        // Výpočet statistik
+        long currentYearSum = allInvoices.stream()
+                .filter(invoice -> invoice.getIssued().getYear() == currentYear)
+                .mapToLong(InvoiceEntity::getPrice)
+                .sum();
+        long allTimeSum = allInvoices.stream()
+                .mapToLong(InvoiceEntity::getPrice)
+                .sum();
+        int invoicesCount = allInvoices.size();
+
+        return new InvoiceStatisticsDTO(currentYearSum, allTimeSum, invoicesCount);
     }
 
     // Metoda pro odstranění faktury
