@@ -48,4 +48,17 @@ public interface InvoiceService {
 
     InvoiceStatisticsDTO getInvoiceStatistics();
 
+    /**
+     * Fetches all invoices based on filter parameters.
+     *
+     * @param buyerId Optional buyer ID for filtering.
+     * @param sellerId Optional seller ID for filtering.
+     * @param product Optional product name for filtering.
+     * @param minPrice Optional minimum price for filtering.
+     * @param maxPrice Optional maximum price for filtering.
+     * @param limit Optional limit for the number of invoices returned.
+     * @return List of filtered invoices.
+     */
+    List<InvoiceDTO> getFilteredInvoices(Long buyerId, Long sellerId, String product, Long minPrice, Long maxPrice, Integer limit);
+
 }
