@@ -2,7 +2,7 @@ package cz.itnetwork.service;
 
 import cz.itnetwork.dto.InvoiceDTO;
 import cz.itnetwork.dto.InvoiceStatisticsDTO;
-import org.yaml.snakeyaml.events.Event;
+import cz.itnetwork.entity.filter.InvoiceFilter;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public interface InvoiceService {
      *
      * @return List of all invoices
      */
-    List<InvoiceDTO> getAll();
+    List<InvoiceDTO> getAllInvoices(InvoiceFilter invoiceFilter);
 
     /**
      * Deletes an invoice by its ID
@@ -59,6 +59,5 @@ public interface InvoiceService {
      * @param limit Optional limit for the number of invoices returned.
      * @return List of filtered invoices.
      */
-    List<InvoiceDTO> getFilteredInvoices(Long buyerId, Long sellerId, String product, Long minPrice, Long maxPrice, Integer limit);
 
 }

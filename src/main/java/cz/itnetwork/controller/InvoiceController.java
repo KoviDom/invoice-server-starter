@@ -2,10 +2,10 @@ package cz.itnetwork.controller;
 
 import cz.itnetwork.dto.InvoiceDTO;
 import cz.itnetwork.dto.InvoiceStatisticsDTO;
+import cz.itnetwork.entity.filter.InvoiceFilter;
 import cz.itnetwork.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,23 +24,10 @@ public class InvoiceController {
 
     }
 
+    //i s filtraci
     @GetMapping("/invoices")
-    public List<InvoiceDTO> getInvoices() {
-        return invoiceService.getAll();
-    }
-
-    // Endpoint pro filtrování faktur pomocí query parametrů
-    @GetMapping("/invoices/filter")
-    public ResponseEntity<List<InvoiceDTO>> getFilteredInvoices(
-            @RequestParam(required = false) Long buyerId,
-            @RequestParam(required = false) Long sellerId,
-            @RequestParam(required = false) String product,
-            @RequestParam(required = false) Long minPrice,
-            @RequestParam(required = false) Long maxPrice,
-            @RequestParam(required = false) Integer limit) {
-
-        List<InvoiceDTO> invoices = invoiceService.getFilteredInvoices(buyerId, sellerId, product, minPrice, maxPrice, limit);
-        return ResponseEntity.ok(invoices);
+    public List<InvoiceDTO> getInvoices(InvoiceFilter invoiceFilter) {
+        return invoiceService.getAllInvoices(invoiceFilter);
     }
 
     // Endpoint pro získání všech faktur vystavených konkrétní osobou (prodej) na základě IČO

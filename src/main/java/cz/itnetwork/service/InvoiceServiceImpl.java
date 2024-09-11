@@ -5,12 +5,12 @@ import cz.itnetwork.dto.InvoiceStatisticsDTO;
 import cz.itnetwork.dto.mapper.InvoiceMapper;
 import cz.itnetwork.entity.InvoiceEntity;
 import cz.itnetwork.entity.PersonEntity;
+import cz.itnetwork.entity.filter.InvoiceFilter;
 import cz.itnetwork.entity.repository.InvoiceRepository;
 import cz.itnetwork.entity.repository.PersonRepository;
 import cz.itnetwork.entity.repository.specification.InvoiceSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -59,8 +59,10 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     // Metoda pro získání všech faktur
     @Override
-    public List<InvoiceDTO> getAll() {
-        return invoiceRepository.findAll()
+    public List<InvoiceDTO> getAllInvoices(InvoiceFilter invoiceFilter) {
+        InvoiceSpecification invoiceSpecification = new InvoiceSpecification(invoiceFilter);
+
+        return invoiceRepository.findAll(invoiceSpecification, PageRequest.of(0, invoiceFilter.getLimit()))
                 .stream()
                 .map(invoiceMapper::toDTO)
                 .collect(Collectors.toList());
@@ -136,33 +138,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         int invoicesCount = allInvoices.size();
 
         return new InvoiceStatisticsDTO(currentYearSum, allTimeSum, invoicesCount);
-    }
-
-    @Override
-    public List<InvoiceDTO> getFilteredInvoices(Long buyerId, Long sellerId, String product, Long minPrice, Long maxPrice, Integer limit) {
-        // Vytvoření specifikace pro filtrování
-        Specification<InvoiceEntity> specification = Specification.where(null);
-
-        // Přidání filtračních kritérií
-        specification = specification
-                .and(InvoiceSpecification.hasBuyer(buyerId))
-                .and(InvoiceSpecification.hasSeller(sellerId))
-                .and(InvoiceSpecification.hasProduct(product))
-                .and(InvoiceSpecification.hasMinPrice(minPrice))
-                .and(InvoiceSpecification.hasMaxPrice(maxPrice));
-
-        // Dotazování s limitem
-        List<InvoiceEntity> invoices;
-        if (limit != null) {
-            invoices = invoiceRepository.findAll(specification, PageRequest.of(0, limit)).getContent();
-        } else {
-            invoices = invoiceRepository.findAll(specification);
-        }
-
-        // Mapování entity na DTO
-        return invoices.stream()
-                .map(invoiceMapper::toDTO)
-                .collect(Collectors.toList());
     }
 
     // Metoda pro odstranění faktury

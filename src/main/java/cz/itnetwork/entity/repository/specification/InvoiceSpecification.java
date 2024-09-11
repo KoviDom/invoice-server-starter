@@ -1,33 +1,50 @@
 package cz.itnetwork.entity.repository.specification;
 
 import cz.itnetwork.entity.InvoiceEntity;
+import cz.itnetwork.entity.InvoiceEntity_;
+import cz.itnetwork.entity.PersonEntity;
+import cz.itnetwork.entity.PersonEntity_;
+import cz.itnetwork.entity.filter.InvoiceFilter;
+import jakarta.persistence.criteria.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
-public class InvoiceSpecification {
+import java.util.ArrayList;
+import java.util.List;
 
-    public static Specification<InvoiceEntity> hasBuyer(Long buyerID) {
-        return (root, query, criteriaBuilder) ->
-                buyerID == null ? null : criteriaBuilder.equal(root.get("buyer").get("id"), buyerID);
-    }
+@RequiredArgsConstructor
+public class InvoiceSpecification implements Specification<InvoiceEntity> {
 
-    public static Specification<InvoiceEntity> hasSeller(Long sellerID) {
-        return (root, query, criteriaBuilder) ->
-                sellerID == null ? null : criteriaBuilder.equal(root.get("seller").get("id"), sellerID);
-    }
+    private final InvoiceFilter filter;
 
-    public static Specification<InvoiceEntity> hasProduct(String product) {
-        return (root, query, criteriaBuilder) ->
-                (product == null || product.isEmpty()) ? null : criteriaBuilder.like(root.get("product"), "%" + product + "%");
-    }
+    @Override
+    public Predicate toPredicate(Root<InvoiceEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+        List<Predicate> predicates = new ArrayList<>();
 
-    public static Specification<InvoiceEntity> hasMinPrice(Long minPrice) {
-        return (root, query, criteriaBuilder) ->
-                minPrice == null ? null : criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
-    }
+        if (filter.getMinPrice() != null) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(InvoiceEntity_.PRICE), filter.getMinPrice()));
+        }
 
-    public static Specification<InvoiceEntity> hasMaxPrice(Long maxPrice) {
-        return (root, query, criteriaBuilder) ->
-                maxPrice == null ? null : criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
+        if (filter.getMaxPrice() != null) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(InvoiceEntity_.PRICE), filter.getMaxPrice()));
+        }
+
+        if (filter.getBuyerID() != null) {
+            Join<PersonEntity, InvoiceEntity> buyerJoin = root.join(InvoiceEntity_.BUYER);
+            predicates.add(criteriaBuilder.equal(buyerJoin.get(PersonEntity_.ID), filter.getBuyerID()));
+        }
+
+        if (filter.getSellerID() != null) {
+            Join<PersonEntity, InvoiceEntity> sellerJoin = root.join(InvoiceEntity_.SELLER);
+            predicates.add(criteriaBuilder.equal(sellerJoin.get(PersonEntity_.ID), filter.getSellerID()));
+        }
+
+        if (filter.getProduct() != null) {
+            Expression<String> productGet = root.get(InvoiceEntity_.PRODUCT);
+            predicates.add(productGet.in(filter.getProduct()));
+        }
+
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
 }
