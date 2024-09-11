@@ -24,7 +24,7 @@ public class InvoiceController {
 
     }
 
-    //i s filtraci
+    //Výpis všech faktur i s filtraci
     @GetMapping("/invoices")
     public List<InvoiceDTO> getInvoices(InvoiceFilter invoiceFilter) {
         return invoiceService.getAllInvoices(invoiceFilter);
